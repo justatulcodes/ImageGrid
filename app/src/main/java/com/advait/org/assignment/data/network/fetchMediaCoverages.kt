@@ -8,6 +8,9 @@ import kotlinx.serialization.json.Json
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * Fetches all the media coverages from the given URL.
+ */
 suspend fun fetchMediaCoverages(): List<Coverage>? {
     val urlString = Constants.URL
     val url = URL(urlString)

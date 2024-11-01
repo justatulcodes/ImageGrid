@@ -37,7 +37,8 @@ internal fun ImageScreen(
     LaunchedEffect(Unit) {
         downloadJob = coroutineScope.launch {
             try {
-                bitmap = downloadFullSizeImage(imageUrl = uiState.selectedImageUrl)
+                bitmap = downloadFullSizeImage(
+                    imageUrl = uiState.articleUrls.getOrNull(uiState.selectedArticleIndex)?.imageUrl?:"")
                 bitmap.let { btm ->
                     if(btm != null){
                         viewModel.setSelectedBitmap(btm)
@@ -61,10 +62,15 @@ internal fun ImageScreen(
     ImageContent(
         modifier = modifier,
         uiState = uiState,
-        onForwardClick = {index ->
+        onForwardClick = {
+            val index = uiState.selectedArticleIndex
+            val increment = if(index == uiState.articleUrls.size - 1) 0 else index + 1
+            Log.d("ImageScreen", "onForwardClick: $increment")
+            viewModel.clearSelectedBitmap()
+            viewModel.setSelectedArticleIndex(increment)
             downloadJob = coroutineScope.launch {
                 try {
-                    bitmap = downloadFullSizeImage(imageUrl = uiState.imageUrls[index].imageUrl)
+                    bitmap = downloadFullSizeImage(imageUrl = uiState.articleUrls[increment].imageUrl)
                     bitmap.let { btm ->
                         viewModel.setSelectedBitmap(btm!!)
                     }
@@ -72,10 +78,16 @@ internal fun ImageScreen(
                     bitmap = null
                 }
             }
-        }, onBackwardsClick = {index ->
+        },
+        onBackwardsClick = {
+            val index = uiState.selectedArticleIndex
+            val decrement = if(index == 0) uiState.articleUrls.size - 1 else index - 1
+            Log.d("ImageScreen", "onBackwardsClick: $decrement")
+            viewModel.clearSelectedBitmap()
+            viewModel.setSelectedArticleIndex(decrement)
             downloadJob = coroutineScope.launch {
                 try {
-                    bitmap = downloadFullSizeImage(imageUrl = uiState.imageUrls[index].imageUrl)
+                    bitmap = downloadFullSizeImage(imageUrl = uiState.articleUrls[decrement].imageUrl)
                     bitmap.let { btm ->
                         viewModel.setSelectedBitmap(btm!!)
                     }

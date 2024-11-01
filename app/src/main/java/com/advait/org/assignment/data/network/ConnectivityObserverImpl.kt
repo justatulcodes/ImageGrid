@@ -5,6 +5,10 @@ import com.advait.org.assignment.utils.ConnectionState
 import com.advait.org.assignment.utils.ConnectivityObserver
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Implementation of [ConnectivityObserver] that uses [ConnectivityManager] to observe
+ * Internet connectivity status.
+ */
 class ConnectivityObserverImpl(
     private val connectivityManager: ConnectivityManager
 ) : ConnectivityObserver {

@@ -5,8 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import com.advait.org.assignment.data.cache.DiskLruCache
-import com.advait.org.assignment.domain.Image
-import com.advait.org.assignment.domain.LruImageCache
+import com.advait.org.assignment.domain.model.Article
+import com.advait.org.assignment.domain.LRUMemoryCache
 import com.advait.org.assignment.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
@@ -17,37 +17,36 @@ import java.io.IOException
 import java.net.URL
 import kotlin.coroutines.cancellation.CancellationException
 
-suspend fun downloadBitmap(image: Image, memoryCache: LruImageCache?, diskCache: DiskLruCache?): Bitmap? {
+/**
+ * Downloads the thumbnail image from the given URL.
+ *
+ * This function is used to download image for grid view. It downloads the image with the
+ * height and width specified in the constants.
+ */
+suspend fun downloadBitmap(article: Article, memoryCache: LRUMemoryCache?, diskCache: DiskLruCache?): Bitmap? {
 
-    memoryCache?.getImage(image.imageKey)?.let { bitmap ->
-        Log.d("downloadImage", "Image loaded from memory cache")
+    memoryCache?.getImage(article.imageKey)?.let { bitmap ->
         return bitmap
     }
 
     return withContext(Dispatchers.IO) {
         try {
-            // Try disk cache first before network call
-            val diskBitmap = diskCache?.get(image.imageKey)
+            val diskBitmap = diskCache?.get(article.imageKey)
             if (diskBitmap != null) {
-                Log.d("downloadImage", "Image loaded from disk cache")
-                // Cache in memory for faster future access
-                memoryCache?.cacheImage(image.imageKey, diskBitmap)
+                memoryCache?.putImage(article.imageKey, diskBitmap)
                 return@withContext diskBitmap
             }
 
-            // If not in cache, download from network
-            val url = URL(image.imageUrl)
+            val url = URL(article.imageUrl)
             val conn = url.openConnection().apply {
                 connectTimeout = 5000
                 readTimeout = 5000
             }
 
             if (!isActive) {
-                Log.d("JOB", "Job cancelled before network request")
                 return@withContext null
             }
 
-            // First check dimensions without loading the full image
             val options = BitmapFactory.Options().apply {
                 inJustDecodeBounds = true
             }
@@ -58,7 +57,6 @@ suspend fun downloadBitmap(image: Image, memoryCache: LruImageCache?, diskCache:
 
             ensureActive()
 
-            // Calculate sample size for the actual load
             options.apply {
                 inSampleSize = calculateInSampleSize(
                     this,
@@ -66,25 +64,22 @@ suspend fun downloadBitmap(image: Image, memoryCache: LruImageCache?, diskCache:
                     Constants.THUMBNAIL_IMG_HEIGHT
                 )
                 inJustDecodeBounds = false
-                // Use RGB_565 for thumbnails to reduce memory usage by 50%
                 inPreferredConfig = Bitmap.Config.RGB_565
             }
 
-            // Load the actual bitmap
-            val bitmap = URL(image.imageUrl).openStream().use { stream ->
+            val bitmap = URL(article.imageUrl).openStream().use { stream ->
                 BitmapFactory.decodeStream(stream, null, options)
             }
 
             bitmap?.let {
-                // Cache operations in parallel
-                launch { memoryCache?.cacheImage(image.imageKey, it) }
-                launch { diskCache?.put(image.imageKey, it) }
+                launch { memoryCache?.putImage(article.imageKey, it) }
+                launch { diskCache?.put(article.imageKey, it) }
                 Log.d("downloadImage", "Image downloaded and cached")
             }
 
             bitmap
         } catch (e: CancellationException) {
-            Log.d("JOB", "CancellationException: ${e.message}")
+            Log.d("Job Cancelled", "CancellationException: ${e.message}")
             throw e
         } catch (e: IOException) {
             Log.e(TAG, "Network error: ${e.message}", e)
@@ -95,9 +90,17 @@ suspend fun downloadBitmap(image: Image, memoryCache: LruImageCache?, diskCache:
         }
     }
 }
+
+/**
+ * Downloads the full-size image from the given URL.
+ *
+ * This function is used when we want to download the full-size image to display on details page.
+ */
 suspend fun downloadFullSizeImage(imageUrl: String): Bitmap? {
     return withContext(Dispatchers.IO) {
         try {
+
+            Log.d("downloadImage", "Downloading full sized image")
             val url = URL(imageUrl)
             val conn = url.openConnection().apply {
                 connectTimeout = 5000
@@ -118,7 +121,10 @@ suspend fun downloadFullSizeImage(imageUrl: String): Bitmap? {
     }
 }
 
-fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+/**
+ * Calculates the optimal inSampleSize for decoding the image.
+ */
+private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
     val (height: Int, width: Int) = options.outHeight to options.outWidth
     var inSampleSize = 1
 

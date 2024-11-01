@@ -34,9 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.advait.org.assignment.data.cache.DiskLruCache
 import com.advait.org.assignment.data.network.downloadBitmap
-import com.advait.org.assignment.domain.Image
-import com.advait.org.assignment.domain.LruImageCache
-import com.advait.org.assignment.presentation.component.BnConnectivityStatusBar
+import com.advait.org.assignment.domain.model.Article
+import com.advait.org.assignment.domain.LRUMemoryCache
+import com.advait.org.assignment.presentation.component.ConnectivityBottomBar
 import com.advait.org.assignment.presentation.stateholders.ImageScreenState
 import com.advait.org.assignment.ui.theme.ImageGridTheme
 import kotlinx.coroutines.Job
@@ -48,8 +48,8 @@ import kotlin.coroutines.cancellation.CancellationException
 fun ImagesGridContent(
     modifier: Modifier,
     uiState: ImageScreenState,
-    onImageClick: (Image) -> Unit,
-    memoryCache: LruImageCache?,
+    onImageClick: (Article) -> Unit,
+    memoryCache: LRUMemoryCache?,
     diskCache: DiskLruCache?
 ) {
 
@@ -74,14 +74,14 @@ fun ImagesGridContent(
                     .padding(1.dp)
             ) {
 
-                items(uiState.imageUrls, key = { imageUrl -> imageUrl.imageKey }) { image ->
-                    ImageItem(image = image, onImageClick = { onImageClick(image) },
+                items(uiState.articleUrls, key = { imageUrl -> imageUrl.imageKey }) { image ->
+                    ImageItem(article = image, onImageClick = { onImageClick(image) },
                         memoryCache = memoryCache, diskCache = diskCache)
                 }
 
             }
 
-            BnConnectivityStatusBar(uiState.isInternetAvailable)
+            ConnectivityBottomBar(uiState.isInternetAvailable)
         }
 
 
@@ -91,9 +91,9 @@ fun ImagesGridContent(
 
 @Composable
 fun ImageItem(
-    image : Image,
+    article : Article,
     onImageClick: () -> Unit,
-    memoryCache: LruImageCache?,
+    memoryCache: LRUMemoryCache?,
     diskCache: DiskLruCache?
 ) {
 
@@ -113,14 +113,14 @@ fun ImageItem(
         }
     }
 
-    LaunchedEffect(image, isVisible) {
+    LaunchedEffect(article, isVisible) {
         // Only start download if the item is visible
         if (isVisible) {
             // Store the job so we can cancel it if needed
             downloadJob = coroutineScope.launch {
                 Log.d("JOB", "Running job with Id : ${downloadJob.toString()}")
                 try {
-                    bitmap = downloadBitmap(image = image,
+                    bitmap = downloadBitmap(article = article,
                         memoryCache = memoryCache, diskCache = diskCache)
                 } catch (e: CancellationException) {
                     // Handle cancellation gracefully
@@ -165,7 +165,7 @@ fun Preview() {
     ImageGridTheme {
         ImagesGridContent(
             uiState = ImageScreenState(
-                imageUrls = emptyList()
+                articleUrls = emptyList()
             ),
             onImageClick = {},
             modifier = Modifier,

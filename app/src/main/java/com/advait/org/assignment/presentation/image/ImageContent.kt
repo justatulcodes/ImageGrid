@@ -19,9 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -33,29 +31,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.advait.org.assignment.R
-import com.advait.org.assignment.presentation.component.BnConnectivityStatusBar
+import com.advait.org.assignment.presentation.component.ConnectivityBottomBar
 import com.advait.org.assignment.presentation.stateholders.ImageScreenState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageContent(
     modifier: Modifier = Modifier,
     uiState: ImageScreenState,
-    onForwardClick: (Int) -> Unit,
-    onBackwardsClick: (Int) -> Unit,
+    onForwardClick: () -> Unit,
+    onBackwardsClick: () -> Unit,
 ) {
 
-    var currIndex by remember {
-        mutableIntStateOf(
-            uiState.imageUrls.indexOfFirst { it.imageUrl == uiState.selectedImageUrl }
-        )
-    }
+    val selectedArticle = uiState.articleUrls.getOrNull(uiState.selectedArticleIndex)
 
     Column(modifier) {
         Box(modifier = Modifier
@@ -86,7 +78,7 @@ fun ImageContent(
                     }
                 }
 
-                Text(text = uiState.selectedImage?.title ?: "Title Not Found", color = Color.White,
+                Text(text = selectedArticle?.title ?: "Title Not Found", color = Color.White,
                     fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier
                         .padding(vertical = 16.dp, horizontal = 16.dp))
 
@@ -98,10 +90,10 @@ fun ImageContent(
 
                     Column {
 
-                        Text(text = "Published On : ${uiState.selectedImage?.publishedOn?:"No date found"}", color = Color.White,
+                        Text(text = "Published On : ${selectedArticle?.publishedOn?:"No date found"}", color = Color.White,
                             fontWeight = FontWeight.Medium, fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = "Published By : ${uiState.selectedImage?.publishedBy?:"Not found"}", color = Color.White,
+                        Text(text = "Published By : ${selectedArticle?.publishedBy?:"Not found"}", color = Color.White,
                             fontWeight = FontWeight.Medium, fontSize = 12.sp)
 
                     }
@@ -122,7 +114,7 @@ fun ImageContent(
 
                 }
 
-                Text(text = uiState.selectedImage?.description?:"No description found",
+                Text(text = selectedArticle?.description?:"No description found",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), color = Color.White)
 
                 OutlinedButton(onClick = { /*TODO*/ }, modifier = Modifier.padding(vertical = 8.dp)) {
@@ -145,13 +137,7 @@ fun ImageContent(
             Row(modifier = Modifier
                 .fillMaxSize()) {
 
-                IconButton(onClick = {onBackwardsClick(
-                    if(currIndex == 0) {
-                        currIndex
-                    }else{
-                        currIndex--
-                    }
-                )},
+                IconButton(onClick = onBackwardsClick,
                     modifier = Modifier.align(Alignment.CenterVertically)) {
                     Icon(
                         painterResource(id = R.drawable.chevron_left), contentDescription = "previous image",
@@ -160,13 +146,7 @@ fun ImageContent(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                IconButton(onClick = { onForwardClick(
-                    if(currIndex == uiState.imageUrls.size - 1) {
-                        currIndex
-                    }else{
-                        currIndex++
-                    }
-                )},
+                IconButton(onClick = onForwardClick,
                     modifier = Modifier.align(Alignment.CenterVertically)) {
                     Icon(
                         painterResource(id = R.drawable.chevron_right), contentDescription = "next image",
@@ -177,7 +157,7 @@ fun ImageContent(
 
         }
 
-        BnConnectivityStatusBar(uiState.isInternetAvailable)
+        ConnectivityBottomBar(uiState.isInternetAvailable)
 
     }
 
@@ -189,6 +169,6 @@ fun ImageContent(
 fun Preview() {
     ImageContent(
         uiState = ImageScreenState(),
-        onForwardClick = { index -> },
-        onBackwardsClick = { index -> })
+        onForwardClick = {  },
+        onBackwardsClick = { })
 }

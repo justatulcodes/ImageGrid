@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 
-//Source : https://medium.com/scalereal/observing-live-connectivity-status-in-jetpack-compose-way-f849ce8431c7
-
 val Context.connectivityManager get(): ConnectivityManager {
     return getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 }
@@ -50,6 +48,9 @@ val ConnectivityManager.currentConnectivityState: ConnectionState
         return if (connected) ConnectionState.Available else ConnectionState.Unavailable
     }
 
+/**
+ * To get update of the internet connection
+ */
 fun NetworkCallback(callback: (ConnectionState) -> Unit): ConnectivityManager.NetworkCallback {
     return object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {

@@ -36,7 +36,7 @@ internal fun ImageGridScreen(
         memoryCache = uiState.memoryCache,
         diskCache = uiState.diskCache,
         onImageClick = { image ->
-            viewModel.setSelectedImageUrl(image)
+            viewModel.setSelectedArticle(image)
             navController.navigate(Constants.IMAGE_SCREEN_ROUTE)
         }
     )

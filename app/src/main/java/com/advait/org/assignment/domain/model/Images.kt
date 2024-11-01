@@ -1,6 +1,9 @@
-package com.advait.org.assignment.domain
+package com.advait.org.assignment.domain.model
 
-data class Image(
+/**
+ * Represents an Article with its metadata
+ */
+data class Article(
     val imageKey : String,
     val title : String,
     val description : String,

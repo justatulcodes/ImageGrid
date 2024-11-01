@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.advait.org.assignment.R
@@ -31,7 +32,7 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun BnConnectivityStatusBar(isConnected: Boolean) {
+fun ConnectivityBottomBar(isConnected: Boolean) {
     var visibility by remember { mutableStateOf(false) }
 
     AnimatedVisibility(
@@ -57,7 +58,8 @@ fun ConnectivityStatusBox(isConnected: Boolean) {
     val backgroundColor by animateColorAsState(if (isConnected) Color.Green else Color.Red,
         label = ""
     )
-    val message = if (isConnected) "Back Online!" else "No Internet Connection!"
+    val message = if (isConnected) stringResource(R.string.back_online)
+        else stringResource(R.string.no_internet_connection)
     val iconResource = if (isConnected) {
         R.drawable.ic_connectivity_available
     } else {
@@ -72,7 +74,7 @@ fun ConnectivityStatusBox(isConnected: Boolean) {
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(painterResource(id = iconResource), "Connectivity Icon",
+            Icon(painterResource(id = iconResource), stringResource(R.string.connectivity_icon),
                 tint = Color.White, modifier = Modifier.size(16.dp))
             Spacer(modifier = Modifier.size(8.dp))
             Text(message, color = Color.White)

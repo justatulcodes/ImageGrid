@@ -8,7 +8,7 @@ import com.advait.org.assignment.data.cache.DiskLruCache
 import com.advait.org.assignment.data.cache.MemoryLruCache
 import com.advait.org.assignment.data.network.fetchMediaCoverages
 import com.advait.org.assignment.data.response.Coverage
-import com.advait.org.assignment.domain.Image
+import com.advait.org.assignment.domain.model.Article
 import com.advait.org.assignment.utils.ConnectionState
 import com.advait.org.assignment.utils.ConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,7 +70,7 @@ class MainViewModel @Inject constructor(
 
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            imageUrls = imageUrls,
+                            articleUrls = imageUrls,
                             errors = null
                         )
                     }else{
@@ -96,11 +96,11 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun constructImageUrl(coverage: Coverage): Image {
+    private fun constructImageUrl(coverage: Coverage): Article {
         val thumbnail = coverage.thumbnail
         val imageUrl = "${thumbnail.domain}/${thumbnail.basePath}/0/${thumbnail.key}"
 
-        val image = Image(
+        val article = Article(
             imageUrl = imageUrl,
             imageKey = thumbnail.basePath,
             title = coverage.title,
@@ -110,15 +110,16 @@ class MainViewModel @Inject constructor(
             articleUrl = coverage.coverageURL
             )
 
-        return image
+        return article
     }
 
-    fun setSelectedImageUrl(image: Image) {
-        val index = _uiState.value.imageUrls.indexOfFirst { it.imageUrl == image.imageUrl }
-        _uiState.value = _uiState.value.copy(
-            selectedImageUrl = image.imageUrl,
-            selectedImageIndex = index,
-            selectedImage = image)
+    fun setSelectedArticle(article: Article) {
+        val index = _uiState.value.articleUrls.indexOfFirst { it.imageUrl == article.imageUrl }
+        _uiState.value = _uiState.value.copy(selectedArticleIndex = index)
+    }
+
+    fun setSelectedArticleIndex(index: Int) {
+        _uiState.value = _uiState.value.copy(selectedArticleIndex = index)
     }
 
     fun setSelectedBitmap(bitmap: Bitmap) {
@@ -126,8 +127,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun clearSelectedBitmap() {
-        _uiState.value = _uiState.value.copy(selectedBitmap = null,
-            selectedImageUrl = "", selectedImage = null)
+        _uiState.value = _uiState.value.copy(selectedBitmap = null)
     }
 
 }

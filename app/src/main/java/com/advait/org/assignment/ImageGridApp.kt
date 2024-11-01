@@ -76,7 +76,8 @@ private fun SetupBackPressHandler() {
             (context as? Activity)?.finish()
         } else {
             backPressedOnce = true
-            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                context.getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -6,5 +6,6 @@ class Config {
         val memoryCacheSize = (maxMemory/8).toInt()
         val diskCacheSize = 30 * 1024 * 1024L // 30MB
 
+        const val CACHE_DIR = "image_cache"
     }
 }
