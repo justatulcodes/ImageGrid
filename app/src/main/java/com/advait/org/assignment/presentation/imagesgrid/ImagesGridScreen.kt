@@ -20,21 +20,14 @@ internal fun ImageGridScreen(
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
-    val diskLruCache = remember {
-        DiskLruCache(context, Config.diskCacheSize)
-    }
 
     LaunchedEffect(Unit) {
-        viewModel.setupDiskCache(diskLruCache)
         viewModel.fetchMediaCoveragesData()
     }
 
     ImagesGridContent(
         modifier = modifier,
         uiState = uiState,
-        memoryCache = uiState.memoryCache,
-        diskCache = uiState.diskCache,
         onImageClick = { image ->
             viewModel.setSelectedArticle(image)
             navController.navigate(Constants.IMAGE_SCREEN_ROUTE)

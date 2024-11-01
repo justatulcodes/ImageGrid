@@ -15,7 +15,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.security.MessageDigest
 
-class DiskLruCache(private val context: Context, private val maxSize: Long) : LRUDiskCache {
+class DiskLruCache(context: Context, private val maxSize: Long) : LRUDiskCache {
     private val cacheDir: File = File(context.cacheDir, Config.CACHE_DIR)
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
