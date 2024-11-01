@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ImageGrid</string>
+    <string name="placeholder_description">The Times of India article explores the deeper meaning of Dussehra, urging readers to confront their inner Ravana to unveil their true potential, represented by Lord Ram. Acharya Prashant emphasizes that the festival symbolizes the triumph of good over evil within oneself, encouraging introspection and self-improvement. He advocates for overcoming negative traits to discover one\'s boundless essence. This reflection during Dussehra invites a journey towards personal transformation and spiritual awakening.</string>
+    <string name="placeholder_title">Dussehra 2024: Defeat Your Inner Ravana To Discover The Boundless Ram Inside You</string>
 </resources>

@@ -1,21 +1,61 @@
 package com.advait.org.assignment.presentation.stateholders
 
-import android.util.Log
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.advait.org.assignment.data.cache.Config
+import com.advait.org.assignment.data.cache.DiskLruCache
+import com.advait.org.assignment.data.cache.MemoryLruCache
 import com.advait.org.assignment.data.network.fetchMediaCoverages
-import com.advait.org.assignment.data.response.Thumbnail
+import com.advait.org.assignment.data.response.Coverage
+import com.advait.org.assignment.domain.Image
+import com.advait.org.assignment.utils.ConnectionState
+import com.advait.org.assignment.utils.ConnectivityObserver
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val connectivityObserver: ConnectivityObserver
+): ViewModel() {
 
     private val _uiState = MutableStateFlow(ImageScreenState())
     val uiState: StateFlow<ImageScreenState> get() = _uiState
+
+
+    init {
+        val imageCache = MemoryLruCache(Config.memoryCacheSize)
+        _uiState.value = _uiState.value.copy(memoryCache = imageCache)
+
+        observeConnectivity()
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.connectionState
+            .distinctUntilChanged()
+            .map { it === ConnectionState.Available }
+            .onEach { isConnected ->
+                _uiState.update { it.copy(isInternetAvailable = isConnected) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+
+    fun setupDiskCache(diskCache: DiskLruCache) {
+        _uiState.value = _uiState.value.copy(diskCache = diskCache)
+    }
+
 
     fun fetchMediaCoveragesData() {
         viewModelScope.launch {
@@ -26,9 +66,8 @@ class MainViewModel : ViewModel() {
                 withContext(Dispatchers.IO) {
                     val mediaCoverages = fetchMediaCoverages()
                     if(!mediaCoverages.isNullOrEmpty()) {
-                        val imageUrls = mediaCoverages.map { constructImageUrl(it.thumbnail) }
+                        val imageUrls = mediaCoverages.map { constructImageUrl(it) }
 
-                        Log.d("ImageScreenViewModel", "Image URLs: $imageUrls")
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             imageUrls = imageUrls,
@@ -57,9 +96,38 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun constructImageUrl(thumbnail: Thumbnail): String {
-        return "${thumbnail.domain}/${thumbnail.basePath}/0/${thumbnail.key}"
+    private fun constructImageUrl(coverage: Coverage): Image {
+        val thumbnail = coverage.thumbnail
+        val imageUrl = "${thumbnail.domain}/${thumbnail.basePath}/0/${thumbnail.key}"
+
+        val image = Image(
+            imageUrl = imageUrl,
+            imageKey = thumbnail.basePath,
+            title = coverage.title,
+            description = coverage.description,
+            publishedOn = coverage.publishedAt,
+            publishedBy = coverage.publishedBy,
+            articleUrl = coverage.coverageURL
+            )
+
+        return image
     }
 
+    fun setSelectedImageUrl(image: Image) {
+        val index = _uiState.value.imageUrls.indexOfFirst { it.imageUrl == image.imageUrl }
+        _uiState.value = _uiState.value.copy(
+            selectedImageUrl = image.imageUrl,
+            selectedImageIndex = index,
+            selectedImage = image)
+    }
+
+    fun setSelectedBitmap(bitmap: Bitmap) {
+        _uiState.value = _uiState.value.copy(selectedBitmap = bitmap)
+    }
+
+    fun clearSelectedBitmap() {
+        _uiState.value = _uiState.value.copy(selectedBitmap = null,
+            selectedImageUrl = "", selectedImage = null)
+    }
 
 }

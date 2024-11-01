@@ -3,15 +3,17 @@ package com.advait.org.assignment
 import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -27,7 +29,7 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun ImageGridApp(navController: NavHostController) {
+fun ImageGridApp(navController: NavHostController, modifier: Modifier) {
 
     SetupBackPressHandler()
 
@@ -39,14 +41,14 @@ fun ImageGridApp(navController: NavHostController) {
 
                val viewModel = it.sharedViewModel<MainViewModel>(navController = navController)
 
-               ImageGridScreen(viewModel = viewModel, navController = navController)
+               ImageGridScreen(modifier = modifier, viewModel = viewModel, navController = navController)
            }
 
            composable(Constants.IMAGE_SCREEN_ROUTE) {
 
                val viewModel = it.sharedViewModel<MainViewModel>(navController = navController)
 
-               ImageScreen(viewModel = viewModel, navController = navController)
+               ImageScreen(modifier = modifier.statusBarsPadding(), viewModel = viewModel, navController = navController)
            }
 
        }
@@ -56,11 +58,11 @@ fun ImageGridApp(navController: NavHostController) {
 
 @Composable
 inline fun < reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
-    val navGraphRoute = destination.parent?.route ?: return  viewModel()
+    val navGraphRoute = destination.parent?.route ?: return  hiltViewModel()
     val parentEntry = remember(this) {
         navController.getBackStackEntry(navGraphRoute)
     }
-    return viewModel(parentEntry)
+    return hiltViewModel(parentEntry)
 }
 
 

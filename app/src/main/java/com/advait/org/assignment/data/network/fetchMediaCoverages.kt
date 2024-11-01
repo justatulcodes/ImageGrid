@@ -1,6 +1,7 @@
 package com.advait.org.assignment.data.network
 
 import com.advait.org.assignment.data.response.Coverage
+import com.advait.org.assignment.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -8,7 +9,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 suspend fun fetchMediaCoverages(): List<Coverage>? {
-    val urlString = "https://acharyaprashant.org/api/v2/content/misc/media-coverages?limit=100"
+    val urlString = Constants.URL
     val url = URL(urlString)
     
     return try {
