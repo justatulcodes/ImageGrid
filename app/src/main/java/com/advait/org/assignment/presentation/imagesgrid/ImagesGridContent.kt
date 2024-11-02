@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -37,6 +38,7 @@ fun ImagesGridContent(
     modifier: Modifier,
     uiState: ImageScreenState,
     onImageClick: (Article) -> Unit,
+    onRetryClick: () -> Unit,
 ) {
 
     Scaffold(
@@ -54,10 +56,10 @@ fun ImagesGridContent(
 
                 when(uiState.errors) {
                     is ImageScreenErrors.GenericError -> {
-                        Error(uiState.errors.message, R.drawable.ic_not_found)
+                        Error(uiState.errors.message, R.drawable.ic_not_found, onRetryClick)
                     }
                     is ImageScreenErrors.NetworkFailure -> {
-                        Error(uiState.errors.message, R.drawable.ic_no_internet)
+                        Error(uiState.errors.message, R.drawable.ic_no_internet, onRetryClick)
                     }
                 }
 
@@ -78,7 +80,7 @@ fun ImagesGridContent(
 }
 
 @Composable
-private fun Error(message: String, drawableInt : Int) {
+private fun Error(message: String, drawableInt : Int, onRetryClick: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
@@ -88,6 +90,10 @@ private fun Error(message: String, drawableInt : Int) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = message)
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = onRetryClick) {
+                Text(text = "Retry")
+            }
         }
     }
 }
@@ -161,6 +167,7 @@ fun Preview() {
             ),
             onImageClick = {},
             modifier = Modifier,
+            onRetryClick = {}
         )
     }
 

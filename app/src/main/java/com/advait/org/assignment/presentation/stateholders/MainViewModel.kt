@@ -46,10 +46,12 @@ class MainViewModel @Inject constructor(
 
 
     fun fetchMediaCoveragesData() {
-        viewModelScope.launch {
 
+        if(_uiState.value.articleUrls.isNotEmpty()) return
+
+        viewModelScope.launch {
             try {
-                _uiState.value = _uiState.value.copy(isLoading = true)
+                _uiState.value = _uiState.value.copy(isLoading = true, errors = null)
 
                 withContext(Dispatchers.IO) {
                     val mediaCoverages = fetchMediaCoverages()
@@ -64,7 +66,7 @@ class MainViewModel @Inject constructor(
                     }else{
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            errors = ImageScreenErrors.GenericError("No media coverages found.")
+                            errors = ImageScreenErrors.GenericError("No media coverages found. Please retry")
                         )
                     }
                 }

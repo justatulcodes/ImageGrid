@@ -31,6 +31,7 @@ internal fun ImageGridScreen(
         onImageClick = { image ->
             viewModel.setSelectedArticle(image)
             navController.navigate(Constants.IMAGE_SCREEN_ROUTE)
-        }
+        },
+        onRetryClick = { viewModel.fetchMediaCoveragesData() }
     )
 }
