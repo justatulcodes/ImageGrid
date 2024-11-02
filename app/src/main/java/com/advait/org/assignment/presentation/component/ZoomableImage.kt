@@ -33,13 +33,8 @@ fun ZoomableImage(
         modifier = modifier
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
-                    // Update the scale based on zoom gestures.
                     scale *= zoom
-
-                    // Limit the zoom levels within a certain range (optional).
                     scale = scale.coerceIn(0.5f, 3f)
-
-                    // Update the offset to implement panning when zoomed.
                     offset = if (scale == 1f) Offset(0f, 0f) else offset + pan
                 }
             }

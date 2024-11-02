@@ -28,28 +28,18 @@ internal fun ImageScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.clearSelectedBitmap()
-        }
-    }
-
     ImageContent(
         modifier = modifier,
         uiState = uiState,
         onForwardClick = {
             val index = uiState.selectedArticleIndex
             val increment = if(index == uiState.articleUrls.size - 1) 0 else index + 1
-            Log.d("ImageScreen", "onForwardClick: $increment")
-            viewModel.clearSelectedBitmap()
             viewModel.setSelectedArticleIndex(increment)
         },
         onBackwardsClick = {
             val index = uiState.selectedArticleIndex
             val decrement = if(index == 0) uiState.articleUrls.size - 1 else index - 1
             viewModel.setSelectedArticleIndex(decrement)
-            Log.d("ImageScreen", "onBackwardsClick: $decrement")
-            viewModel.clearSelectedBitmap()
         },
         onShareArticleClick = {
             val article = uiState.articleUrls.getOrNull(uiState.selectedArticleIndex) ?: return@ImageContent

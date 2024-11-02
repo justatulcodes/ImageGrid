@@ -1,11 +1,7 @@
 package com.advait.org.assignment.presentation.stateholders
 
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.advait.org.assignment.data.cache.Config
-import com.advait.org.assignment.data.cache.DiskLruCache
-import com.advait.org.assignment.data.cache.MemoryLruCache
 import com.advait.org.assignment.data.network.fetchMediaCoverages
 import com.advait.org.assignment.data.response.Coverage
 import com.advait.org.assignment.domain.model.Article
@@ -35,9 +31,6 @@ class MainViewModel @Inject constructor(
 
 
     init {
-        val imageCache = MemoryLruCache(Config.memoryCacheSize)
-        _uiState.value = _uiState.value.copy(memoryCache = imageCache)
-
         observeConnectivity()
     }
 
@@ -52,11 +45,6 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun setupDiskCache(diskCache: DiskLruCache) {
-        _uiState.value = _uiState.value.copy(diskCache = diskCache)
-    }
-
-
     fun fetchMediaCoveragesData() {
         viewModelScope.launch {
 
@@ -66,7 +54,7 @@ class MainViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     val mediaCoverages = fetchMediaCoverages()
                     if(!mediaCoverages.isNullOrEmpty()) {
-                        val imageUrls = mediaCoverages.map { constructImageUrl(it) }
+                        val imageUrls = mediaCoverages.map { constructArticleObject(it) }
 
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
@@ -96,7 +84,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun constructImageUrl(coverage: Coverage): Article {
+    private fun constructArticleObject(coverage: Coverage): Article {
         val thumbnail = coverage.thumbnail
         val imageUrl = "${thumbnail.domain}/${thumbnail.basePath}/0/${thumbnail.key}"
 
@@ -121,13 +109,4 @@ class MainViewModel @Inject constructor(
     fun setSelectedArticleIndex(index: Int) {
         _uiState.value = _uiState.value.copy(selectedArticleIndex = index)
     }
-
-    fun setSelectedBitmap(bitmap: Bitmap) {
-        _uiState.value = _uiState.value.copy(selectedBitmap = bitmap)
-    }
-
-    fun clearSelectedBitmap() {
-        _uiState.value = _uiState.value.copy(selectedBitmap = null)
-    }
-
 }

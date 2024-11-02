@@ -35,7 +35,7 @@ suspend fun downloadThumbnail(
 
         if (!isActive) return@withContext null
 
-        val options = BitmapFactory.Options().apply {
+        val options = Options().apply {
             inJustDecodeBounds = true
         }
 
@@ -77,7 +77,7 @@ suspend fun downloadFullSizeImage(imageUrl: String): Bitmap? = withContext(Dispa
             readTimeout = 5000
         }
 
-        val options = BitmapFactory.Options().apply {
+        val options = Options().apply {
             inPreferredConfig = Bitmap.Config.RGB_565
         }
 

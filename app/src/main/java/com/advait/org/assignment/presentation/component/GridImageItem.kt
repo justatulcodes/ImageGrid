@@ -88,7 +88,6 @@ fun GridImageItem(
                 } catch (e: CancellationException) {
                     bitmap = null
                     isError = true
-                    Log.d("GridImageItem", "CancellationException invoked")
                     isLoading = false
                 }
             }

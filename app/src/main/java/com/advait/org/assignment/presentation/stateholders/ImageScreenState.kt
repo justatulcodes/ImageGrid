@@ -1,9 +1,6 @@
 package com.advait.org.assignment.presentation.stateholders
 
-import android.graphics.Bitmap
-import com.advait.org.assignment.data.cache.DiskLruCache
 import com.advait.org.assignment.domain.model.Article
-import com.advait.org.assignment.domain.LRUMemoryCache
 
 data class ImageScreenState(
 
@@ -14,9 +11,5 @@ data class ImageScreenState(
 
     val articleUrls : List<Article> = emptyList(),
     val selectedArticleIndex : Int = 0,
-    val selectedBitmap : Bitmap? = null,
-
-    val memoryCache : LRUMemoryCache? = null,
-    val diskCache : DiskLruCache? = null
 
 )

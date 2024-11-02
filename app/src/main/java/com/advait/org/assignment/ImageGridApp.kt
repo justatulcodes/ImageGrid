@@ -48,23 +48,13 @@ fun ImageGridApp(navController: NavHostController, modifier: Modifier) {
 
                val viewModel = it.sharedViewModel<MainViewModel>(navController = navController)
 
-               ImageScreen(modifier = modifier.statusBarsPadding(), viewModel = viewModel, navController = navController)
+               ImageScreen(modifier = modifier, viewModel = viewModel, navController = navController)
            }
 
        }
    }
 
 }
-
-@Composable
-inline fun < reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
-    val navGraphRoute = destination.parent?.route ?: return  hiltViewModel()
-    val parentEntry = remember(this) {
-        navController.getBackStackEntry(navGraphRoute)
-    }
-    return hiltViewModel(parentEntry)
-}
-
 
 @Composable
 private fun SetupBackPressHandler() {
@@ -85,4 +75,13 @@ private fun SetupBackPressHandler() {
         delay(2000)
         backPressedOnce = false
     }
+}
+
+@Composable
+inline fun < reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
+    val navGraphRoute = destination.parent?.route ?: return  hiltViewModel()
+    val parentEntry = remember(this) {
+        navController.getBackStackEntry(navGraphRoute)
+    }
+    return hiltViewModel(parentEntry)
 }
