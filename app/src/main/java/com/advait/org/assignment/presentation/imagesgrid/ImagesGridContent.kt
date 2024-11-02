@@ -43,7 +43,8 @@ fun ImagesGridContent(
         topBar = {
             ImageGridTopBar(modifier)
         },
-        modifier = modifier
+        modifier = modifier,
+        containerColor = Color.White
     ) { paddingValues ->
         Column {
 

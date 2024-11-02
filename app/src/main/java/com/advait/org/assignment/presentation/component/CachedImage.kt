@@ -29,6 +29,17 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
 
+/**
+ * A composable function that displays an image from a given URL. It downloads the image in
+ * full resolution and caches it for future use.
+ *
+ * @param imageUrl The URL of the image to be displayed.
+ * @param modifier The modifier to be applied to the composable.
+ * @param contentDescription A description of the image for accessibility purposes.
+ * @param contentScale The scale to apply to the image.
+ * @param placeholderResId The resource ID of the placeholder image to be displayed while the
+ * @param errorResId The resource ID of the error image to be displayed if the image cannot be
+ */
 @Composable
 fun CachedImage(
     imageUrl: String,

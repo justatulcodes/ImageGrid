@@ -31,6 +31,11 @@ import com.advait.org.assignment.R
 import kotlinx.coroutines.delay
 
 
+/**
+ * Bottom bar to show connectivity status when internet is available or not
+ *
+ * @param isConnected: Boolean - True if internet is available, false otherwise
+ */
 @Composable
 fun ConnectivityBottomBar(isConnected: Boolean) {
     var visibility by remember { mutableStateOf(false) }

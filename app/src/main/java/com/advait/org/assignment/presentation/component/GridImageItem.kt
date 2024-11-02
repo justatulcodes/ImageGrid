@@ -31,6 +31,19 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
+/**
+ * Composable function to display a grid image item with optional placeholders and error images
+ * and built in caching of image in Memory and Disk Cache. It downloads the image in smaller
+ * size to be displayed in a scroll view
+ *
+ * @param imageUrl The URL of the image to be displayed.
+ * @param imageKey A unique key associated with the image. Used as cached image key.
+ * @param modifier Modifier for styling and layout.
+ * @param onImageClick Callback to be invoked when the image is clicked.
+ * @param placeholderResId Resource ID of the placeholder image to be displayed while loading.
+ * @param errorResId Resource ID of the error image to be displayed in case of loading failure.
+ *
+ */
 @Composable
 fun GridImageItem(
     imageUrl: String,

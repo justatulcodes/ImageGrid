@@ -16,6 +16,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 
 
+/**
+ * Zoomable image composable. Lets the user zoom in and out of the image.
+ *
+ * @param imagePainter The painter for the image to be displayed.
+ * @param modifier The modifier for the composable.
+ * @param contentDescription The content description for the image.
+ * @param contentScale The content scale to apply to the image.
+ */
 @Composable
 fun ZoomableImage(
     imagePainter: Painter,
