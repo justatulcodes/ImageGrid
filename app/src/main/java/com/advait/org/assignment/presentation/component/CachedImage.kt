@@ -110,8 +110,8 @@ fun CachedImage(
                     contentScale = contentScale
                 )
             }
-            bitmap != null -> Image(
-                painter = BitmapPainter(bitmap!!.asImageBitmap()),
+            bitmap != null -> ZoomableImage(
+                imagePainter = BitmapPainter(bitmap!!.asImageBitmap()),
                 contentDescription = contentDescription,
                 modifier = Modifier.matchParentSize(),
                 contentScale = contentScale
